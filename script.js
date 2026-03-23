@@ -110,7 +110,7 @@ function getWebGLContext (canvas) {
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : (halfFloat ? halfFloat.HALF_FLOAT_OES : gl.UNSIGNED_BYTE);
+    const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : halfFloat.HALF_FLOAT_OES;
     let formatRGBA;
     let formatRG;
     let formatR;
