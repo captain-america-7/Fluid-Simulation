@@ -18,8 +18,6 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans&display=swap" rel="stylesheet">
-
-    <!-- dat.gui -->
     <script type="text/javascript" src="dat.gui.min.js"></script>
 
     <style>
@@ -57,7 +55,7 @@
             z-index: 0;
         }
 
-        /* Glassmorphism Control Panel Container */
+        /* ── Top-right UI cluster ── */
         #ui-container {
             position: absolute;
             top: 20px;
@@ -66,9 +64,11 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            gap: 8px;
         }
 
-        #pill-button {
+        /* Shared pill-button style */
+        .icon-btn {
             width: 44px;
             height: 44px;
             border-radius: 22px;
@@ -81,20 +81,29 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             color: var(--text-primary);
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            transition: background 0.2s, transform 0.15s ease, box-shadow 0.2s;
             outline: none;
+            flex-shrink: 0;
         }
 
-        #pill-button:focus-visible {
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.12);
+            transform: scale(1.06);
+        }
+
+        .icon-btn:focus-visible {
             box-shadow: 0 0 0 2px var(--accent);
         }
 
-        #pill-button.hidden {
-            display: none;
+        /* Active state for pause / settings toggle */
+        .icon-btn.active {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.4);
         }
 
+        /* ── Control Panel ── */
         #control-panel {
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
@@ -106,23 +115,26 @@
             transform-origin: top right;
             transform: scaleY(0);
             opacity: 0;
-            transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 220ms ease;
+            max-height: 0;
+            transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                        opacity 220ms ease,
+                        max-height 220ms ease;
             pointer-events: none;
         }
 
         #control-panel.expanded {
             transform: scaleY(1);
             opacity: 1;
+            max-height: 700px;
             pointer-events: auto;
         }
 
-        /* Restyle dat.gui within our panel */
+        /* Restyle dat.gui */
         #control-panel .dg.main {
             background-color: transparent !important;
             font-family: 'DM Mono', monospace !important;
             width: 280px !important;
         }
-
         #control-panel .dg li.gui-stats { display: none; }
         #control-panel .dg .c input[type=text] {
             background: rgba(0,0,0,0.2);
@@ -136,43 +148,27 @@
             background: transparent !important;
             border-bottom: 1px solid rgba(255,255,255,0.05) !important;
         }
-        #control-panel .dg .cr.boolean { border-left: none; }
-        #control-panel .dg .cr.function { border-left: none; }
-        #control-panel .dg .cr.number { border-left: none; }
+        #control-panel .dg .cr.boolean,
+        #control-panel .dg .cr.function,
+        #control-panel .dg .cr.number,
         #control-panel .dg .cr.string { border-left: none; }
         #control-panel .dg .cr:last-child { border-bottom: none !important; }
-        
-        .dg.ac {
-            display: none !important; /* hide default dat.gui container */
-        }
 
-        /* Info Drawer */
-        #info-button {
+        .dg.ac { display: none !important; }
+
+        /* ── Bottom-left cluster ── */
+        #bottom-left {
             position: absolute;
             bottom: 20px;
             left: 20px;
-            width: 44px;
-            height: 44px;
-            border-radius: 22px;
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
             z-index: 10;
-            font-size: 20px;
-            color: var(--text-primary);
-            transition: background 0.2s;
-            outline: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
         }
 
-        #info-button:focus-visible {
-            box-shadow: 0 0 0 2px var(--accent);
-        }
-
+        /* Info Drawer */
         #info-drawer {
             position: absolute;
             bottom: 80px;
@@ -192,26 +188,22 @@
             transition: transform 300ms ease-out, opacity 300ms ease-out;
             pointer-events: none;
         }
-
         #info-drawer.open {
             transform: translateY(0);
             opacity: 1;
             pointer-events: auto;
         }
-
         #info-drawer h2 {
             margin: 0 0 8px 0;
             font-size: 1.2rem;
             font-family: 'DM Mono', monospace;
         }
-
         #info-drawer p {
             margin: 0 0 16px 0;
             font-size: 0.95rem;
             line-height: 1.5;
             color: var(--text-primary);
         }
-
         #info-drawer .tech-tag {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -219,7 +211,6 @@
             margin-bottom: 20px;
             display: block;
         }
-
         #info-drawer a {
             color: var(--accent);
             text-decoration: none;
@@ -228,18 +219,15 @@
             font-family: 'DM Mono', monospace;
             font-size: 0.9rem;
         }
+        #info-drawer a:hover { border-bottom-color: var(--accent); }
 
-        #info-drawer a:hover {
-            border-bottom-color: var(--accent);
-        }
-
-        /* GitHub Icon Bottom Right */
+        /* ── GitHub link — bottom-right ── */
         #github-link {
             position: absolute;
             bottom: 20px;
             right: 20px;
             z-index: 10;
-            opacity: 0.7;
+            opacity: 0.6;
             transition: opacity 0.2s;
             color: var(--text-primary);
             text-decoration: none;
@@ -247,20 +235,16 @@
             align-items: center;
             gap: 6px;
             font-family: 'DM Mono', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-
-        #github-link:hover {
-            opacity: 1;
-        }
-
+        #github-link:hover { opacity: 1; }
         #github-link svg {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             fill: currentColor;
         }
 
-        /* Toast */
+        /* ── Toast ── */
         #toast {
             position: absolute;
             top: 20px;
@@ -271,166 +255,170 @@
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
-            padding: 8px 16px;
+            padding: 8px 18px;
             color: var(--text-primary);
             font-family: 'DM Mono', monospace;
             font-size: 0.9rem;
             z-index: 100;
             opacity: 0;
             pointer-events: none;
+            white-space: nowrap;
             transition: opacity 150ms ease;
         }
-        
-        #toast.show {
-            opacity: 1;
-        }
+        #toast.show { opacity: 1; }
 
-        /* Desktop specific styles */
+        /* ── Desktop tweaks ── */
         @media (min-width: 768px) {
-            #pill-button {
-                display: none;
-            }
-            #control-panel {
-                transform: scaleY(1);
-                opacity: 1;
-                pointer-events: auto;
-            }
             #info-drawer {
                 bottom: 20px;
                 left: 80px;
                 transform: translateY(20px);
             }
-            #info-drawer.open {
-                transform: translateY(0);
-            }
+            #info-drawer.open { transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <canvas></canvas>
+    <canvas aria-label="Interactive fluid simulation. Drag or touch to interact."></canvas>
 
+    <!-- Top-right: Settings toggle + Pause + Screenshot -->
     <div id="ui-container">
-        <button id="pill-button" aria-label="Toggle settings">⚙</button>
-        <div id="control-panel">
-            <!-- dat.gui will be injected here via our script -->
-        </div>
+        <button id="settings-btn" class="icon-btn" aria-label="Toggle settings" title="Settings">⚙</button>
+        <button id="pause-btn"    class="icon-btn" aria-label="Pause/Resume simulation" title="Pause / Resume">▶</button>
+        <button id="screenshot-btn" class="icon-btn" aria-label="Take screenshot" title="Screenshot">📷</button>
+        <div id="control-panel"></div>
     </div>
 
-    <button id="info-button" aria-label="About this simulation">ⓘ</button>
+    <!-- Bottom-left: About drawer -->
+    <div id="bottom-left">
+        <button id="info-button" class="icon-btn" aria-label="About this simulation" title="About">ⓘ</button>
+    </div>
+
     <div id="info-drawer">
         <h2>Fluid Simulation</h2>
         <p>Real-time fluid dynamics, simulated on your GPU using the Navier-Stokes equations.</p>
         <span class="tech-tag">Built with WebGL + GLSL · No frameworks</span>
         <p style="margin-bottom:0">Open source. Study it, fork it, break it.</p>
         <div style="margin-top: 12px;">
-            <a href="https://github.com/paveldogreat/WebGL-Fluid-Simulation" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+            <a href="https://github.com/captain-america-7/Fluid-Simulation" target="_blank" rel="noopener noreferrer">View on GitHub</a>
         </div>
     </div>
 
-    <a href="https://github.com/paveldogreat/WebGL-Fluid-Simulation" id="github-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
+    <!-- Bottom-right: GitHub -->
+    <a href="https://github.com/captain-america-7/Fluid-Simulation" id="github-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
         <svg viewBox="0 0 24 24">
             <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
         </svg>
-        <span>★</span>
+        GitHub
     </a>
 
-    <div id="toast">Performance mode active</div>
+    <div id="toast"></div>
 
     <script src="script.js"></script>
     <script>
-        // UI Logic
         document.addEventListener('DOMContentLoaded', () => {
-            const pillButton = document.getElementById('pill-button');
-            const controlPanel = document.getElementById('control-panel');
-            const infoButton = document.getElementById('info-button');
-            const infoDrawer = document.getElementById('info-drawer');
+            const settingsBtn    = document.getElementById('settings-btn');
+            const controlPanel   = document.getElementById('control-panel');
+            const pauseBtn       = document.getElementById('pause-btn');
+            const screenshotBtn  = document.getElementById('screenshot-btn');
+            const infoButton     = document.getElementById('info-button');
+            const infoDrawer     = document.getElementById('info-drawer');
             let hideTimeout;
+            let panelOpen = false;
 
-            // Mount dat.gui inside our container
+            // ── Mount dat.gui into our glass panel ──────────────────────
             const mountGui = () => {
                 const ac = document.querySelector('.dg.ac');
                 if (ac) {
                     const main = ac.querySelector('.main');
-                    if (main) {
-                        controlPanel.appendChild(main);
-                    }
+                    if (main) controlPanel.appendChild(main);
                     ac.remove();
                 }
             };
-            
-            // Give dat.gui a moment to initialize in script.js
             setTimeout(mountGui, 100);
 
-            // Toggle Control Panel
+            // ── Settings toggle (works on ALL screen sizes) ───────────
             const togglePanel = (e) => {
-                const isExpanded = controlPanel.classList.contains('expanded');
-                if (isExpanded) {
-                    controlPanel.classList.remove('expanded');
-                    pillButton.classList.remove('hidden');
-                } else {
-                    controlPanel.classList.add('expanded');
-                    resetAutoCollapse();
-                }
-                if(e) e.stopPropagation();
+                panelOpen = !panelOpen;
+                controlPanel.classList.toggle('expanded', panelOpen);
+                settingsBtn.classList.toggle('active', panelOpen);
+                if (panelOpen) scheduleAutoCollapse();
+                if (e) e.stopPropagation();
             };
+            settingsBtn.addEventListener('click', togglePanel);
 
-            pillButton.addEventListener('click', togglePanel);
-
-            // Auto-collapse logic for mobile
-            const resetAutoCollapse = () => {
-                if(window.innerWidth >= 768) return; // Don't auto-collapse on desktop
+            // Auto-collapse after 4s of inactivity on mobile
+            const scheduleAutoCollapse = () => {
+                if (window.innerWidth >= 768) return;
                 clearTimeout(hideTimeout);
                 hideTimeout = setTimeout(() => {
+                    panelOpen = false;
                     controlPanel.classList.remove('expanded');
-                    pillButton.classList.remove('hidden');
+                    settingsBtn.classList.remove('active');
                 }, 4000);
             };
+            controlPanel.addEventListener('touchstart', scheduleAutoCollapse, { passive: true });
+            controlPanel.addEventListener('mousemove',  scheduleAutoCollapse, { passive: true });
+            controlPanel.addEventListener('click',      scheduleAutoCollapse, { passive: true });
 
-            controlPanel.addEventListener('touchstart', resetAutoCollapse, {passive: true});
-            controlPanel.addEventListener('mousemove', resetAutoCollapse, {passive: true});
-            controlPanel.addEventListener('click', resetAutoCollapse, {passive: true});
-
-            // Toggle Info Drawer
-            infoButton.addEventListener('click', (e) => {
-                infoDrawer.classList.toggle('open');
+            // ── Pause / Resume ────────────────────────────────────────
+            pauseBtn.addEventListener('click', (e) => {
+                if (typeof config !== 'undefined') {
+                    config.PAUSED = !config.PAUSED;
+                    pauseBtn.textContent = config.PAUSED ? '⏵' : '▶';
+                    pauseBtn.classList.toggle('active', config.PAUSED);
+                    pauseBtn.title = config.PAUSED ? 'Resume' : 'Pause';
+                    if (typeof updateUrlHash === 'function') updateUrlHash();
+                }
                 e.stopPropagation();
             });
 
-            // Close popups on click outside
+            // ── Screenshot ────────────────────────────────────────────
+            screenshotBtn.addEventListener('click', (e) => {
+                if (typeof captureScreenshot === 'function') {
+                    captureScreenshot();
+                    window.showToast('Screenshot saved!');
+                }
+                e.stopPropagation();
+            });
+
+            // ── Info Drawer ───────────────────────────────────────────
+            infoButton.addEventListener('click', (e) => {
+                infoDrawer.classList.toggle('open');
+                infoButton.classList.toggle('active', infoDrawer.classList.contains('open'));
+                e.stopPropagation();
+            });
+
+            // ── Click outside to close ────────────────────────────────
             document.addEventListener('click', (e) => {
                 if (!infoDrawer.contains(e.target) && e.target !== infoButton) {
                     infoDrawer.classList.remove('open');
+                    infoButton.classList.remove('active');
                 }
-                
-                if (window.innerWidth < 768) {
-                    if (!controlPanel.contains(e.target) && e.target !== pillButton) {
-                        controlPanel.classList.remove('expanded');
-                        pillButton.classList.remove('hidden');
-                    }
+                if (!controlPanel.contains(e.target) && e.target !== settingsBtn) {
+                    panelOpen = false;
+                    controlPanel.classList.remove('expanded');
+                    settingsBtn.classList.remove('active');
                 }
             });
 
-            // Prevent canvas interaction when touching UI
-            const preventCanvasInteractions = (el) => {
-                ['mousedown', 'touchstart', 'touchmove', 'touchend', 'click'].forEach(evt => {
-                    el.addEventListener(evt, (e) => e.stopPropagation(), { passive: false });
-                });
+            // ── Block canvas events on UI elements ───────────────────
+            const trapEvents = (el) => {
+                ['mousedown','touchstart','touchmove','touchend','click'].forEach(evt =>
+                    el.addEventListener(evt, e => e.stopPropagation(), { passive: false })
+                );
             };
-            
-            preventCanvasInteractions(controlPanel);
-            preventCanvasInteractions(pillButton);
-            preventCanvasInteractions(infoButton);
-            preventCanvasInteractions(infoDrawer);
+            [controlPanel, settingsBtn, pauseBtn, screenshotBtn, infoButton, infoDrawer]
+                .forEach(trapEvents);
         });
 
-        // Expose toast function for script.js
+        // Toast helper (used by script.js + screenshot button)
         window.showToast = function(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
         };
     </script>
 </body>
