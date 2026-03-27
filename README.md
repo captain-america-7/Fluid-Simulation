@@ -1,41 +1,56 @@
-# Fluid Simulation — Public Web Experiment
+# 🔥 WebGL Fluid Simulation
 
-**[Live Demo](https://fluid-simulation-sand.vercel.app/)**
+An insanely high-performance, purely customized WebGL fluid simulation running natively in your browser using the **Navier-Stokes equations**. The system accurately models fluid advection, divergence, curl, and pressure solving within an intricately optimized Fragment Shader pipeline.
 
-A fullscreen, GPU-powered fluid simulation built for immediate, zero-friction interaction. The page feels less like a website and more like a portal into a living material. Touch it, watch it breathe.
+[👉 Live Demo](https://fluid-simulation-sand.vercel.app/)
 
-## About the Engine
+## 🚀 Key Features
 
-This simulation evaluates the **Navier-Stokes equations** in real-time entirely on the GPU. It heavily uses WebGL Framebuffer Objects (FBOs) to store velocity, pressure, dye, and vorticity fields, bouncing them back and forth between shaders. 
+*   **V1 & V2 Dual Architecture:**
+    *   **V1 (Core Engine):** A hyper-stable, ultra-responsive Naviar-Stokes sandbox.
+    *   **V2 (Advanced Physics):** An experimental zone featuring:
+        *   **Image Dissolve:** Dynamically inject textures to melt into the dye sequence via a restorative force.
+        *   **Thermal Convection:** "Lava-lamp" physics driving buoyancy offsets based on an isolated Temperature ping-pong buffer.
+        *   **Static SDF Boundaries:** A procedural Signed Distance Field forcing no-slip fluid flow around central obstacles.
+*   **Custom Glassmorphic UI:** Removed all external dependencies (no dat.gui). Fully responsive, mobile-compliant glassmorphism UI overlay.
+*   **URL State Management:** Every parameter is continuously serialized down to the `window.location.hash` allowing flawless instant sharing presets!
+*   **Post-Processing Pipeline:** Multi-pass Bloom prefilters, Sunray light scattering, blurring, and dithering natively baked in.
 
-**Shader Pipeline:**
-`curl → vorticity → divergence → pressure → gradient subtract → advection`
+## 🛠️ Quick Start (Local Development)
 
-The core loop updates these fields every frame (~60fps), generating incredibly detailed fluid motion with no canvas or DOM overhead.
+The codebase has exactly zero `npm` dependencies. To run it flawlessly:
 
-## Quick Start (Local Development)
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/captain-america-7/Fluid-Simulation.git
+    cd Fluid-Simulation
+    ```
+2.  Launch a simple static file server (e.g. using Python or Node):
+    ```bash
+    npx serve .
+    # OR
+    python -m http.server 8000
+    ```
+3.  Visit `http://localhost:3000` (or `8000`) in your browser.
 
-The project demands **zero build step** and holds no bloated dependencies. Just serve it statically.
+## 🤝 Building & Contributing
 
-```bash
-# Using Python
-python -m http.server 8000
+Feel free to break it and evolve it. 
 
-# Using Node.js
-npx serve .
-```
+1. **Fork the repo** and create a feature branch (`git checkout -b feature-amazing-fluid`).
+2. **Review `script.js` or `v2.js`**: WebGL initialization limits are explicitly handled inside `initFramebuffers()`.
+3. **Commit** your fluid mechanic (e.g., `git commit -m 'feat: Add non-Newtonian viscosity shader'`).
+4. **Push & Pull Rquest**.
 
-Then open `http://localhost:8000` (or the equivalent local URL).
+## 🎨 License
 
-## Architecture
-
-- `index.html`: Entry point, canvas element + floating UI chrome.
+This project is open-source. Fork it, rip the shaders, build beautiful things.
+ element + floating UI chrome.
 - `script.js`: Physics engine + WebGL core. Follows a functional setup and uses heavily optimised GLSL kernels.
 - Pure HTML/CSS UI: Control inputs styled to match the custom glassmorphic aesthetic (no external UI libraries required).
 - `LDR_LLL1_0.png`: Dithering noise texture to eliminate color banding.
 
 ## Features
-
 - Multi-touch fluid splats with responsive color transitions.
 - Automatic performance scaling (degrades cleanly on low-end hardware).
 - Zero-friction URL State persistence for sharing presets (e.g. `/#viscosity=0.4&bloom=true`).

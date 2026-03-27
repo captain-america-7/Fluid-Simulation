@@ -13,8 +13,12 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Fluid — a living canvas">
     <meta property="og:description" content="Touch it. Watch it breathe.">
-    <meta property="og:image" content="/assets/og-preview.jpg">
+    <meta property="og:image" content="https://fluid-simulation-sand.vercel.app/assets/og-preview.jpg">
+    <meta property="og:url" content="https://fluid-simulation-sand.vercel.app/">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fluid — a living canvas">
+    <meta name="twitter:description" content="Touch it. Watch it breathe. Interactive WebGL.">
+    <meta name="twitter:image" content="https://fluid-simulation-sand.vercel.app/assets/og-preview.jpg">
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 
@@ -55,6 +59,30 @@
             width: 100%; height: 100%;
             display: block;
             z-index: 0;
+        }
+
+        /* ── FOUC Loading Spinner ───────────────────────────── */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease;
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loader.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         /* ── Shared icon button ──────────────────────────────── */
@@ -150,6 +178,7 @@
             justify-content: space-between;
             padding: 4px 14px;
             gap: 12px;
+            min-height: 44px; /* Mobile touch accessibility target */
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
         .row:last-child { border-bottom: none; }
@@ -390,6 +419,7 @@
     </style>
 </head>
 <body>
+    <div id="loader"><div class="spinner"></div></div>
     <canvas aria-label="Interactive fluid simulation. Drag or touch to interact."></canvas>
 
     <!-- ── Top-left: Version Selector ── -->
@@ -398,12 +428,13 @@
         <a href="/v2.html" class="icon-btn" style="text-decoration: none; font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: bold;">v2</a>
     </div>
 
-    <!-- ── Top-right: Settings ⚙ · Pause ▶ · Screenshot 📷 ── -->
+    <!-- ── Top-right: Settings ⚙ · Pause ▶ · Screenshot 📷 · Share 🔗 ── -->
     <div id="ui-container">
         <div class="button-column">
             <button id="settings-btn" class="icon-btn" title="Settings" aria-label="Toggle settings">⚙</button>
             <button id="pause-btn"    class="icon-btn" title="Pause"    aria-label="Pause / Resume">▶</button>
             <button id="screenshot-btn" class="icon-btn" title="Screenshot" aria-label="Take screenshot">📷</button>
+            <button id="share-btn"    class="icon-btn" title="Copy Preset Link" aria-label="Copy Preset Link">🔗</button>
         </div>
 
         <!-- Pure-HTML control panel -->
@@ -739,6 +770,15 @@
             pauseBtn.title = config.PAUSED ? 'Resume' : 'Pause';
             pauseBtn.classList.toggle('active', config.PAUSED);
             if (typeof updateUrlHash === 'function') updateUrlHash();
+            e.stopPropagation();
+        });
+
+        /* ─── Share Link ──────────────────────────────────────── */
+        document.getElementById('share-btn').addEventListener('click', (e) => {
+            if (typeof updateUrlHash === 'function') updateUrlHash();
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                window.showToast('Link Copied! 🔗');
+            });
             e.stopPropagation();
         });
 

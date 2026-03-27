@@ -35,7 +35,7 @@ let config = {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 1024,
     CAPTURE_RESOLUTION: 512,
-    DENSITY_DISSIPATION: 1,
+    DENSITY_DISSIPATION: 1.2,
     VELOCITY_DISSIPATION: 0.2,
     PRESSURE: 0.8,
     PRESSURE_ITERATIONS: 20,
@@ -1188,11 +1188,16 @@ function createTextureAsync (url) {
     };
 
     let image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => {
         obj.width = image.width;
         obj.height = image.height;
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+    };
+    image.onerror = () => {
+        console.warn('Failed to load texture:', url);
+        // Fallback already assigned in initialization (1x1 white pixel)
     };
     image.src = url;
 
@@ -1210,6 +1215,8 @@ function updateKeywords () {
 updateKeywords();
 initFramebuffers();
 multipleSplats(parseInt(Math.random() * 20) + 5);
+
+document.getElementById('loader')?.classList.add('hidden');
 
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;
