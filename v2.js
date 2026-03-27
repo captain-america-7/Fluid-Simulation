@@ -64,22 +64,24 @@ let config = {
     STATIC_OBSTACLE: true
 }
 
-function pointerPrototype () {
-    this.id = -1;
-    this.texcoordX = 0;
-    this.texcoordY = 0;
-    this.prevTexcoordX = 0;
-    this.prevTexcoordY = 0;
-    this.deltaX = 0;
-    this.deltaY = 0;
-    this.down = false;
-    this.moved = false;
-    this.color = [30, 0, 300];
+class Pointer {
+    constructor() {
+        this.id = -1;
+        this.texcoordX = 0;
+        this.texcoordY = 0;
+        this.prevTexcoordX = 0;
+        this.prevTexcoordY = 0;
+        this.deltaX = 0;
+        this.deltaY = 0;
+        this.down = false;
+        this.moved = false;
+        this.color = [30, 0, 300];
+    }
 }
 
 let pointers = [];
 let splatStack = [];
-pointers.push(new pointerPrototype());
+pointers.push(new Pointer());
 
 const { gl, ext } = getWebGLContext(canvas);
 
@@ -1566,7 +1568,7 @@ canvas.addEventListener('mousedown', e => {
     let posY = scaleByPixelRatio(e.offsetY);
     let pointer = pointers.find(p => p.id == -1);
     if (pointer == null)
-        pointer = new pointerPrototype();
+        pointer = new Pointer();
     updatePointerDownData(pointer, -1, posX, posY);
 });
 
@@ -1586,7 +1588,7 @@ canvas.addEventListener('touchstart', e => {
     e.preventDefault();
     const touches = e.targetTouches;
     while (touches.length >= pointers.length)
-        pointers.push(new pointerPrototype());
+        pointers.push(new Pointer());
     for (let i = 0; i < touches.length; i++) {
         let posX = scaleByPixelRatio(touches[i].pageX);
         let posY = scaleByPixelRatio(touches[i].pageY);

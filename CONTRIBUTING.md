@@ -1,4 +1,4 @@
-# Contributing to Fluid
+# Contributing to Liquify Art
 
 First of all, thank you! The code relies heavily on raw WebGL/GLSL—don't let the ~1650 lines intimidate you. There are a handful of major files with straightforward responsibilities:
 
@@ -15,16 +15,16 @@ First of all, thank you! The code relies heavily on raw WebGL/GLSL—don't let t
 
 ## Feature Philosophy
 
-- The UI MUST NEVER shout over the sim. The controls run entirely in floating, unobtrusive glassmorphism chrome.
+- The UI MUST NEVER shout over the simulation. The controls run entirely in floating, unobtrusive glassmorphism chrome.
 - Add features via the `#hash` URL sync. Every change to physical dynamics should be shareable via a single URL.
 - No monolithic `Webpack`/`Vite` setups are permitted for v1. Work directly via ES6 `script` tags.
 
 ## Reporting Issues
 
-If you find visual glithes on specific devices:
+If you find visual glitches on specific devices:
 - Specify exactly the Platform and Browser.
 - Capture console logs if a WebGL fallback error triggers.
-- Take a screenshot of the `#` URL hash that causes the erratic behaviour.
+- Take a screenshot of the `#` URL hash that causes the erratic behavior.
 
 ## Submitting Pull Requests
 
