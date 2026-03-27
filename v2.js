@@ -988,6 +988,10 @@ let sunraysTemp;
 let ditheringTexture = createTextureAsync('LDR_LLL1_0.png');
 let dissolveImageTexture = createTextureAsync('/assets/og-preview.jpg');
 
+function updateDissolveImage (url) {
+    dissolveImageTexture = createTextureAsync(url);
+}
+
 const blurProgram            = new Program(blurVertexShader, blurShader);
 const copyProgram            = new Program(baseVertexShader, copyShader);
 const clearProgram           = new Program(baseVertexShader, clearShader);
