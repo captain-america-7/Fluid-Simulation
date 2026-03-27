@@ -1,6 +1,6 @@
 # Fluid Simulation — Public Web Experiment
 
-**[Live Demo](https://yoursite.com/)** *(Update with actual URL)*
+**[Live Demo](https://fluid-simulation-sand.vercel.app/)**
 
 A fullscreen, GPU-powered fluid simulation built for immediate, zero-friction interaction. The page feels less like a website and more like a portal into a living material. Touch it, watch it breathe.
 
