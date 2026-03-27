@@ -8,16 +8,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>Fluid — a living canvas</title>
-    <meta name="description" content="Touch it. Watch it breathe.">
+    <title>Liquify Art | Interactive Fluid Canvas</title>
+    <meta name="description" content="A high-performance interactive canvas where your imagination flows through GPU-accelerated fluid physics.">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Fluid — a living canvas">
-    <meta property="og:description" content="Touch it. Watch it breathe.">
+    <meta property="og:title" content="Liquify Art | Interactive Fluid Canvas">
+    <meta property="og:description" content="A high-performance interactive canvas where your imagination flows through GPU-accelerated fluid physics.">
     <meta property="og:image" content="https://fluid-simulation-sand.vercel.app/assets/og-preview.jpg">
-    <meta property="og:url" content="https://fluid-simulation-sand.vercel.app/">
+    <meta property="og:url" content="https://liquify-art.vercel.app/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Fluid — a living canvas">
-    <meta name="twitter:description" content="Touch it. Watch it breathe. Interactive WebGL.">
+    <meta name="twitter:title" content="Liquify Art | Interactive Fluid Canvas">
+    <meta name="twitter:description" content="A high-performance interactive canvas where your imagination flows through GPU-accelerated fluid physics.">
     <meta name="twitter:image" content="https://fluid-simulation-sand.vercel.app/assets/og-preview.jpg">
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -586,7 +586,7 @@
     </div>
 
     <div id="info-drawer">
-        <h2>Fluid Simulation</h2>
+        <h2 style="font-weight: 500; letter-spacing: 0.1em;">LIQUIFY ART</h2>
         <p>Real-time fluid dynamics, simulated on your GPU using the Navier-Stokes equations.</p>
         <span class="tech-tag">Built with WebGL + GLSL · No frameworks</span>
         <p style="margin-bottom:0">Open source. Study it, fork it, break it.</p>
@@ -775,8 +775,8 @@
 
         /* ─── Share Link ──────────────────────────────────────── */
         document.getElementById('share-btn').addEventListener('click', (e) => {
-            if (typeof updateUrlHash === 'function') updateUrlHash();
-            navigator.clipboard.writeText(window.location.href).then(() => {
+            let shareUrl = 'https://liquify-art.vercel.app/' + window.location.hash;
+            navigator.clipboard.writeText(shareUrl).then(() => {
                 window.showToast('Link Copied! 🔗');
             });
             e.stopPropagation();
@@ -832,6 +832,21 @@
         clearTimeout(t._t);
         t._t = setTimeout(() => t.classList.remove('show'), 2500);
     };
+    </script>
+    <div id="watermark" style="position: absolute; bottom: 50px; right: 18px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; font-size: 0.8rem; pointer-events: none; transition: opacity 1s; z-index: 10;">Built with Liquify Art</div>
+    <script>
+        let wmTimeout;
+        function resetWatermark() {
+            const wm = document.getElementById('watermark');
+            if(wm) {
+                wm.style.opacity = '1';
+                clearTimeout(wmTimeout);
+                wmTimeout = setTimeout(() => wm.style.opacity = '0', 5000);
+            }
+        }
+        document.addEventListener('mousemove', resetWatermark);
+        document.addEventListener('touchstart', resetWatermark);
+        resetWatermark();
     </script>
 </body>
 </html>

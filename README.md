@@ -1,61 +1,61 @@
-# 🔥 WebGL Fluid Simulation
+# 🌌 Liquify Art: Where Imagination Flows
 
-An insanely high-performance, purely customized WebGL fluid simulation running natively in your browser using the **Navier-Stokes equations**. The system accurately models fluid advection, divergence, curl, and pressure solving within an intricately optimized Fragment Shader pipeline.
+**Liquify Art** is a next-generation digital canvas that turns your screen into a living, breathing masterpiece. Forget static brushes—here, your imagination is a fluid force. Built on the raw power of **GPU-accelerated Navier-Stokes physics**, it allows you to swirl, melt, and weave colors into physically accurate, high-fidelity art.
 
-[👉 Live Demo](https://fluid-simulation-sand.vercel.app/)
+[👉 Enter the Flow](https://liquify-art.vercel.app/)
 
-## 🚀 Key Features
+## ✨ The Vision
 
-*   **V1 & V2 Dual Architecture:**
-    *   **V1 (Core Engine):** A hyper-stable, ultra-responsive Naviar-Stokes sandbox.
-    *   **V2 (Advanced Physics):** An experimental zone featuring:
-        *   **Image Dissolve:** Dynamically inject textures to melt into the dye sequence via a restorative force.
-        *   **Thermal Convection:** "Lava-lamp" physics driving buoyancy offsets based on an isolated Temperature ping-pong buffer.
-        *   **Static SDF Boundaries:** A procedural Signed Distance Field forcing no-slip fluid flow around central obstacles.
-*   **Custom Glassmorphic UI:** Removed all external dependencies (no dat.gui). Fully responsive, mobile-compliant glassmorphism UI overlay.
-*   **URL State Management:** Every parameter is continuously serialized down to the `window.location.hash` allowing flawless instant sharing presets!
-*   **Post-Processing Pipeline:** Multi-pass Bloom prefilters, Sunray light scattering, blurring, and dithering natively baked in.
+Most art apps are about lines. **Liquify Art** is about **motion**. It’s a "Zero-Gravity" playground where:
 
-## 🛠️ Quick Start (Local Development)
+  * **Your touch is the catalyst:** Every gesture creates waves of light and color.
+  * **Physics is the brush:** Watch as "Mathematical Ink" dances, swirls, and fades with realistic fluid dynamics.
+  * **The Canvas is Alive:** Post-processing effects like **Luminous Bloom** and **Volumetric Sunrays** make your creations feel three-dimensional.
 
-The codebase has exactly zero `npm` dependencies. To run it flawlessly:
+-----
 
-1.  Clone the repository:
+## 🚀 The Creative Engine
+
+### 🌊 Flow Modes (V1 & V2)
+
+  * **Classic Flow:** A hyper-stable, ultra-responsive sandbox for pure relaxation and visual satisfaction.
+  * **The Alchemy Lab (V2):**
+      * **Image Melting:** Drop an image into the simulation and watch it dissolve into a swirl of pixels, then pull itself back together.
+      * **Lava Physics:** Heat-based convection that lets your art "breathe" and rise like a digital lava lamp.
+      * **Obstacle Interaction:** Place "Glass" boundaries that force the fluid to curve and spiral around them.
+
+### 💎 Premium Glassmorphic UI
+
+We believe the tools should be as beautiful as the art. Our custom **Glassmorphic interface** provides deep control over:
+
+  * **Splat Radius & Pressure:** Control the "weight" of your touch.
+  * **Viscosity:** Change the liquid from watery ink to thick, flowing honey.
+  * **URL State Sharing:** Created something beautiful? The URL updates in real-time. Just copy the link and send it to a friend—they’ll see exactly what you created.
+
+-----
+
+## 🛠️ Artist’s Setup (Local Development)
+
+Liquify Art is built for speed—**Zero dependencies. Zero bloat.**
+
+1.  **Clone the Gallery:**
     ```bash
-    git clone https://github.com/captain-america-7/Fluid-Simulation.git
-    cd Fluid-Simulation
+    git clone https://github.com/captain-america-7/Liquify-Art.git
+    cd Liquify-Art
     ```
-2.  Launch a simple static file server (e.g. using Python or Node):
+2.  **Launch the Canvas:**
     ```bash
-    npx serve .
-    # OR
-    python -m http.server 8000
+    npx serve . 
+    # Or use any static server
     ```
-3.  Visit `http://localhost:3000` (or `8000`) in your browser.
+3.  **Open `localhost:3000`** and start creating.
 
-## 🤝 Building & Contributing
+-----
 
-Feel free to break it and evolve it. 
+## 🤝 Join the Movement
 
-1. **Fork the repo** and create a feature branch (`git checkout -b feature-amazing-fluid`).
-2. **Review `script.js` or `v2.js`**: WebGL initialization limits are explicitly handled inside `initFramebuffers()`.
-3. **Commit** your fluid mechanic (e.g., `git commit -m 'feat: Add non-Newtonian viscosity shader'`).
-4. **Push & Pull Rquest**.
+Liquify Art is open-source. Whether you are a GLSL wizard or a UI designer, your contribution helps expand the boundaries of digital expression.
 
-## 🎨 License
-
-This project is open-source. Fork it, rip the shaders, build beautiful things.
- element + floating UI chrome.
-- `script.js`: Physics engine + WebGL core. Follows a functional setup and uses heavily optimised GLSL kernels.
-- Pure HTML/CSS UI: Control inputs styled to match the custom glassmorphic aesthetic (no external UI libraries required).
-- `LDR_LLL1_0.png`: Dithering noise texture to eliminate color banding.
-
-## Features
-- Multi-touch fluid splats with responsive color transitions.
-- Automatic performance scaling (degrades cleanly on low-end hardware).
-- Zero-friction URL State persistence for sharing presets (e.g. `/#viscosity=0.4&bloom=true`).
-- Accessible, single-page architecture built purely with ES6 and WebGL.
-
-## Contributing
-
-See ["Good first issues"](https://github.com/paveldogreat/WebGL-Fluid-Simulation/issues) for an entry point. Read `CONTRIBUTING.md` for specific contribution workflows and rules.
+1.  **Fork the repo.**
+2.  **Add a new shader effect** (e.g., 'Neon Trails' or 'Oil Paint mode').
+3.  **Submit a Pull Request** and let’s build the future of art together.
