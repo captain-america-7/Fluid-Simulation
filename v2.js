@@ -595,6 +595,20 @@ const bloomPrefilterShader = compileShader(gl.FRAGMENT_SHADER, `
     }
 `);
 
+const imageSplatShader = compileShader(gl.FRAGMENT_SHADER, `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D uTarget;
+    uniform sampler2D uImage;
+    uniform float blendFactor;
+
+    void main () {
+        vec3 base = texture2D(uTarget, vUv).xyz;
+        vec3 imageColor = texture2D(uImage, vec2(vUv.x, 1.0 - vUv.y)).rgb;
+        gl_FragColor = vec4(mix(base, imageColor, blendFactor), 1.0);
+    }
+`);
+
 const bloomBlurShader = compileShader(gl.FRAGMENT_SHADER, `
     precision mediump float;
     precision mediump sampler2D;
@@ -830,6 +844,24 @@ const vorticityShader = compileShader(gl.FRAGMENT_SHADER, `
     }
 `);
 
+const buoyancyShader = compileShader(gl.FRAGMENT_SHADER, `
+    precision highp float;
+    precision highp sampler2D;
+    varying vec2 vUv;
+    uniform sampler2D uVelocity;
+    uniform sampler2D uTemperature;
+    uniform float ambientTemperature;
+    uniform float sigma;
+    uniform float dt;
+
+    void main () {
+        vec2 vel = texture2D(uVelocity, vUv).xy;
+        float temp = texture2D(uTemperature, vUv).r;
+        vec2 force = vec2(0.0, sigma * (temp - ambientTemperature));
+        gl_FragColor = vec4(vel + force * dt, 0.0, 1.0);
+    }
+`);
+
 const pressureShader = compileShader(gl.FRAGMENT_SHADER, `
     precision mediump float;
     precision mediump sampler2D;
@@ -851,6 +883,26 @@ const pressureShader = compileShader(gl.FRAGMENT_SHADER, `
         float divergence = texture2D(uDivergence, vUv).x;
         float pressure = (L + R + B + T - divergence) * 0.25;
         gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
+    }
+`);
+
+const boundaryShader = compileShader(gl.FRAGMENT_SHADER, `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D uVelocity;
+    uniform float aspectRatio;
+    
+    float sdCircle(vec2 p, float r) {
+        return length(p) - r;
+    }
+
+    void main () {
+        vec2 vel = texture2D(uVelocity, vUv).xy;
+        vec2 p = vUv - 0.5;
+        p.x *= aspectRatio;
+        float d = sdCircle(p, 0.15); 
+        float mask = smoothstep(0.0, 0.005, d); 
+        gl_FragColor = vec4(vel * mask, 0.0, 1.0);
     }
 `);
 
@@ -916,6 +968,7 @@ let dye;
 let velocity;
 let divergence;
 let curl;
+let temperature;
 let pressure;
 let bloom;
 let bloomFramebuffers = [];
@@ -923,6 +976,7 @@ let sunrays;
 let sunraysTemp;
 
 let ditheringTexture = createTextureAsync('LDR_LLL1_0.png');
+let dissolveImageTexture = createTextureAsync('/assets/og-preview.jpg');
 
 const blurProgram            = new Program(blurVertexShader, blurShader);
 const copyProgram            = new Program(baseVertexShader, copyShader);
@@ -939,8 +993,11 @@ const advectionProgram       = new Program(baseVertexShader, advectionShader);
 const divergenceProgram      = new Program(baseVertexShader, divergenceShader);
 const curlProgram            = new Program(baseVertexShader, curlShader);
 const vorticityProgram       = new Program(baseVertexShader, vorticityShader);
+const buoyancyProgram        = new Program(baseVertexShader, buoyancyShader);
 const pressureProgram        = new Program(baseVertexShader, pressureShader);
+const boundaryProgram        = new Program(baseVertexShader, boundaryShader);
 const gradienSubtractProgram = new Program(baseVertexShader, gradientSubtractShader);
+const imageSplatProgram      = new Program(baseVertexShader, imageSplatShader);
 
 const displayMaterial = new Material(baseVertexShader, displayShaderSource);
 
@@ -969,6 +1026,11 @@ function initFramebuffers () {
     divergence = createFBO      (simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
     curl       = createFBO      (simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
     pressure   = createDoubleFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
+
+    if (temperature == null)
+        temperature = createDoubleFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, filtering);
+    else
+        temperature = resizeDoubleFBO(temperature, simRes.width, simRes.height, r.internalFormat, r.format, texType, filtering);
 
     initBloomFramebuffers();
     initSunraysFramebuffers();
@@ -1196,10 +1258,26 @@ function applyInputs () {
 function step (dt) {
     gl.disable(gl.BLEND);
 
+    imageSplatProgram.bind();
+    gl.uniform1i(imageSplatProgram.uniforms.uTarget, dye.read.attach(0));
+    gl.uniform1i(imageSplatProgram.uniforms.uImage, dissolveImageTexture.attach(1));
+    gl.uniform1f(imageSplatProgram.uniforms.blendFactor, 0.3 * dt); // Restorative force
+    blit(dye.write);
+    dye.swap();
+
     curlProgram.bind();
     gl.uniform2f(curlProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
     gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read.attach(0));
     blit(curl);
+
+    buoyancyProgram.bind();
+    gl.uniform1i(buoyancyProgram.uniforms.uVelocity, velocity.read.attach(0));
+    gl.uniform1i(buoyancyProgram.uniforms.uTemperature, temperature.read.attach(1));
+    gl.uniform1f(buoyancyProgram.uniforms.ambientTemperature, 0.0);
+    gl.uniform1f(buoyancyProgram.uniforms.sigma, 1500.0); // Temperature buoyancy scalar
+    gl.uniform1f(buoyancyProgram.uniforms.dt, dt);
+    blit(velocity.write);
+    velocity.swap();
 
     vorticityProgram.bind();
     gl.uniform2f(vorticityProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
@@ -1207,6 +1285,12 @@ function step (dt) {
     gl.uniform1i(vorticityProgram.uniforms.uCurl, curl.attach(1));
     gl.uniform1f(vorticityProgram.uniforms.curl, config.CURL);
     gl.uniform1f(vorticityProgram.uniforms.dt, dt);
+    blit(velocity.write);
+    velocity.swap();
+
+    boundaryProgram.bind();
+    gl.uniform1i(boundaryProgram.uniforms.uVelocity, velocity.read.attach(0));
+    gl.uniform1f(boundaryProgram.uniforms.aspectRatio, canvas.width / canvas.height);
     blit(velocity.write);
     velocity.swap();
 
@@ -1237,6 +1321,12 @@ function step (dt) {
     blit(velocity.write);
     velocity.swap();
 
+    boundaryProgram.bind();
+    gl.uniform1i(boundaryProgram.uniforms.uVelocity, velocity.read.attach(0));
+    gl.uniform1f(boundaryProgram.uniforms.aspectRatio, canvas.width / canvas.height);
+    blit(velocity.write);
+    velocity.swap();
+
     advectionProgram.bind();
     gl.uniform2f(advectionProgram.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
     if (!ext.supportLinearFiltering)
@@ -1256,6 +1346,12 @@ function step (dt) {
     gl.uniform1f(advectionProgram.uniforms.dissipation, config.DENSITY_DISSIPATION);
     blit(dye.write);
     dye.swap();
+
+    gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read.attach(0));
+    gl.uniform1i(advectionProgram.uniforms.uSource, temperature.read.attach(1));
+    gl.uniform1f(advectionProgram.uniforms.dissipation, config.DENSITY_DISSIPATION * 2.5); // Cool down faster
+    blit(temperature.write);
+    temperature.swap();
 }
 
 function render (target) {
@@ -1417,6 +1513,11 @@ function splat (x, y, dx, dy, color) {
     gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
     blit(dye.write);
     dye.swap();
+
+    gl.uniform1i(splatProgram.uniforms.uTarget, temperature.read.attach(0));
+    gl.uniform3f(splatProgram.uniforms.color, 5.0, 0.0, 0.0); // Inject intense heat
+    blit(temperature.write);
+    temperature.swap();
 }
 
 function correctRadius (radius) {
